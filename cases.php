@@ -262,15 +262,17 @@ td i:hover {
 }
 
 .modal {
-    font-family: 'Arial', sans-serif;  /* Set your preferred font */
-    font-size: 15px;  /* Set a comfortable font size */
-    color: black;  
-    display:none;
+    font-family: 'Arial', sans-serif;
+    font-size: 15px;
+    color: black;
+    display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 700px;
+    max-height: 80vh; /* Add this to limit height */
+    overflow-y: auto; /* Add this to enable vertical scrolling */
     border: 2px solid #c76c2e;
     padding: 20px;
     border-radius: 10px;
@@ -288,13 +290,15 @@ td i:hover {
             margin-top: 0;
         }
         .close-button {
-            position: absolute;
+            position: sticky;
             top: 10px;
-            right: 10px;
+            float: right;
             font-size: 20px;
             cursor: pointer;
+            background-color: white;
+            z-index: 1001;
         }
-        .form-group {
+                .form-group {
             margin-bottom: 10px;
         }
         .inline {
@@ -360,83 +364,39 @@ textarea, input[type="text"], input[type="date"] {
     width: 100%;
     max-width: 250px;
 }
-.complainant-container {
+.complainant-fields, .respondent-fields {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.complainant-fields {
-    display: grid;
-    grid-template-columns: auto auto auto auto;
+    align-items: center;
     gap: 10px;
-    align-items: start;
+    margin-bottom: 10px;
+    width: 100%;
 }
 
-.complainant-fields input {
+/* Making sure the input fields take appropriate space */
+.complainant-fields input, .respondent-fields input {
     padding: 5px;
-    border: 3px solid #c85c2e; /* Adjust to match your theme */
+    border: 3px solid #c85c2e;
     border-radius: 3px;
-    width: 150px; /* Adjust width as needed */
+    width: 150px;
 }
 
-/* Adjusting the Add Complainant button to the right */
-.add-complainant-container {
+/* Remove containers' previous right-alignment */
+.add-complainant-container, .add-respondent-container {
     display: flex;
-    justify-content: flex-end; /* Align the button to the right */
     margin-top: 10px;
-    width: 100%; /* Make sure the container takes full width */
+    width: 100%;
 }
 
-.add-complainant {
-    background-color: #c85c2e; /* Adjust button color */
+/* Styling for the add buttons */
+.add-complainant, .add-respondent {
+    background-color: #c85c2e;
     color: white;
     padding: 5px 10px;
     border: none;
     border-radius: 3px;
     cursor: pointer;
-    width: 150px; /* Adjust width to suit */
+    width: 150px;
     text-align: center;
-}
-
-.respondent-container {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.respondent-fields {
-    display: grid;
-    grid-template-columns: auto auto auto auto;
-    gap: 10px;
-    align-items: start;
-}
-
-.respondent-fields input {
-    padding: 5px;
-    border: 3px solid #c85c2e; /* Adjust to match your theme */
-    border-radius: 3px;
-    width: 150px; /* Adjust width as needed */
-}
-
-/* Adjusting the Add Respondent button to the right */
-.add-respondent-container {
-    display: flex;
-    justify-content: flex-end; /* Align the button to the right */
-    margin-top: 10px;
-    width: 100%; /* Make sure the container takes full width */
-}
-
-.add-respondent {
-    background-color: #c85c2e; /* Adjust button color */
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    width: 150px; /* Adjust width to suit */
-    text-align: center;
-    margin-bottom: 30px;
 }
 
 input[type="radio"]:checked {
@@ -456,6 +416,8 @@ input[type="radio"]:checked {
     z-index: 1000;
     width: 500px;
     max-width: 90%;
+    max-height: 80vh; /* Add this to limit height */
+    overflow-y: auto; /* Add this to enable vertical scrolling */
 }
 
 .popup-content {
@@ -463,7 +425,7 @@ input[type="radio"]:checked {
     width: 320px;
     padding: 20px;
     text-align: left;
-    margin: 15% auto;
+    margin: 0 auto; /* Changed from margin: 15% auto */
     border-radius: 10px;
     box-shadow: 0px 0px 10px #aaa;
     position: relative;
@@ -501,6 +463,25 @@ input[type="radio"]:checked {
     font-size: 20px;
     font-weight: bold;
     margin: 10px 0;
+}
+
+.remove-person {
+    background-color: #c85c2e;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 0;
+    margin-left: 10px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .button-group {
@@ -718,8 +699,20 @@ input[type="radio"]:checked {
                 <div class="case-center">
                     <label>Date of Initial Confrontation: <input type="date" name="confrontation_date"></label>
                     <input type="text" name="action_taken" placeholder="Action Taken">
-                    <label>Date of Settlement or Award:  <input type="text" name="settlement_date" class="date-or-text" placeholder="YYYY-MM-DD or CFA/N/A"></label>
-                    <label>Date of Execution:  <input type="text" name="exec_settlement_date" class="date-or-text" placeholder="YYYY-MM-DD or CFA/N/A"></label>
+                    
+                    <label>Date of Settlement or Award: 
+                        <input type="text" name="settlement_date" class="date-or-text" 
+                            placeholder="YYYY-MM-DD or CFA/N/A" 
+                            pattern="(\d{4}-\d{2}-\d{2})|(CFA)|(N/A)"
+                            title="Enter a date in YYYY-MM-DD format, or CFA, or N/A">
+                    </label>
+                    
+                    <label>Date of Execution: 
+                        <input type="text" name="exec_settlement_date" class="date-or-text" 
+                            placeholder="YYYY-MM-DD or CFA/N/A" 
+                            pattern="(\d{4}-\d{2}-\d{2})|(CFA)|(N/A)"
+                            title="Enter a date in YYYY-MM-DD format, or CFA, or N/A">
+                    </label>
                 </div>
 
                 <div class="case-right">
@@ -781,45 +774,125 @@ input[type="radio"]:checked {
     
 </body>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("addCaseModal");
     const addBtn = document.querySelector(".add-btn");
-    const closeBtn = document.querySelector(".close-button"); // Fixed selector
-    const editIcons = document.querySelectorAll(".fa-edit"); // Select all edit icons
-    const modalTitle = modal.querySelector("h2"); // The modal title
-    const modalAddButton = modal.querySelector("button"); // The button in modal
+    const closeBtn = document.querySelector(".close-button");
+    const editIcons = document.querySelectorAll(".fa-edit");
+    const modalTitle = modal.querySelector("h2");
+    const modalAddButton = modal.querySelector("button[type='submit']");
     const caseDetailsButtons = document.querySelectorAll(".case-details-btn");
     const deleteButtons = document.querySelectorAll(".delete-btn");
+    const addComplainantBtn = document.querySelector(".add-complainant");
+    const addRespondentBtn = document.querySelector(".add-respondent");
+    const searchInput = document.querySelector(".search-bar input");
+    const filterSelect = document.querySelector(".filter-btn");
 
-
+    // Form submission - update to handle both add and edit cases
     document.getElementById("addCaseForm").addEventListener("submit", function(event) {
         event.preventDefault();
-
+        
         let formData = new FormData(this);
-
-        fetch("configs/add_case.php", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.text())
-        .then(data => {
-            if (data.trim() === "success") {
-                alert("Case added successfully!");
-                location.reload();
-            } else {
-                alert("Error: " + data);
-            }
-        })
-        .catch(error => console.error("Error:", error));
+        const isEditMode = this.getAttribute("data-edit-mode") === "true";
+        
+        if (isEditMode) {
+            const caseNo = this.getAttribute("data-case-no");
+            formData.append("case_no", caseNo);
+            
+            fetch("configs/edit_case.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data.trim() === "success") {
+                    alert("Case updated successfully!");
+                    location.reload();
+                } else {
+                    alert("Error: " + data);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        } else {
+            // Existing add case functionality
+            fetch("configs/add_case.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data.trim() === "success") {
+                    alert("Case added successfully!");
+                    location.reload();
+                } else {
+                    alert("Error: " + data);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
     });
+
     // Function to handle opening the modal for adding a case
     addBtn.addEventListener("click", function () {
-        modal.style.display = "block";
-        modalTitle.textContent = "Add Case"; // Set the title to Add Case
-        modalAddButton.textContent = "Add"; // Set the button text to Add
-        clearModalFields(); // Clear the modal fields
+    // Reset form attributes for add mode
+    const form = document.getElementById("addCaseForm");
+    form.removeAttribute("data-edit-mode");
+    form.removeAttribute("data-case-no");
+    
+    // Change modal title and button text for adding
+    const modalTitle = modal.querySelector("h2");
+    const modalAddButton = modal.querySelector("button[type='submit']");
+    modalTitle.textContent = "Add Case";
+    modalAddButton.textContent = "Add Case";
+    
+    // Clear all fields
+    clearModalFields();
+    
+    // Show the modal
+    modal.style.display = "block";
+});
+
+    // Add functionality for adding complainants
+    addComplainantBtn.addEventListener("click", function() {
+        const complainantContainer = document.getElementById("complainantFields");
+        const newFields = document.createElement("div");
+        newFields.className = "complainant-fields";
+        newFields.innerHTML = `
+            <input type="text" name="complainant_first_name[]" placeholder="First Name" required>
+            <input type="text" name="complainant_middle_name[]" placeholder="Middle Initial">
+            <input type="text" name="complainant_last_name[]" placeholder="Last Name" required>
+            <input type="text" name="complainant_suffix[]" placeholder="Suffix">
+            <button type="button" class="remove-person">×</button>
+        `;
+        complainantContainer.appendChild(newFields);
+        
+        // Add event listener to the remove button
+        newFields.querySelector(".remove-person").addEventListener("click", function() {
+            complainantContainer.removeChild(newFields);
+        });
+    });
+    
+    // Add functionality for adding respondents
+    addRespondentBtn.addEventListener("click", function() {
+        const respondentContainer = document.getElementById("respondentFields");
+        const newFields = document.createElement("div");
+        newFields.className = "respondent-fields";
+        newFields.innerHTML = `
+            <input type="text" name="respondent_first_name[]" placeholder="First Name" required>
+            <input type="text" name="respondent_middle_name[]" placeholder="Middle Initial">
+            <input type="text" name="respondent_last_name[]" placeholder="Last Name" required>
+            <input type="text" name="respondent_suffix[]" placeholder="Suffix">
+            <button type="button" class="remove-person">×</button>
+        `;
+        respondentContainer.appendChild(newFields);
+        
+        // Add event listener to the remove button
+        newFields.querySelector(".remove-person").addEventListener("click", function() {
+            respondentContainer.removeChild(newFields);
+        });
     });
 
+    // Delete case handlers    
     deleteButtons.forEach(button => {
         button.addEventListener("click", function () {
             const caseNo = this.getAttribute("data-case-no");
@@ -827,6 +900,7 @@ input[type="radio"]:checked {
         });
     });
 
+    // Case details popup
     caseDetailsButtons.forEach(button => {
         button.addEventListener("click", function () {
             // Retrieve data from `data-*` attributes
@@ -849,7 +923,7 @@ input[type="radio"]:checked {
         });
     });
 
-    // Close popup
+    // Close case details popup
     document.getElementById("closeCasePopup").addEventListener("click", function () {
         document.getElementById("caseDetailsPopup").style.display = "none";
     });
@@ -857,31 +931,17 @@ input[type="radio"]:checked {
     // Function to handle opening the modal for editing a case
     editIcons.forEach(icon => {
         icon.addEventListener("click", function (event) {
-            const row = event.target.closest("tr"); // Get the row of the clicked edit icon
-            const caseId = row.querySelector("td:nth-child(1)").textContent; // Get the Case ID
-            const complainant = row.querySelector("td:nth-child(2)").textContent; // Get the complainant
-            const respondent = row.querySelector("td:nth-child(3)").textContent; // Get the respondent
-            const title = row.querySelector("td:nth-child(4)").textContent; // Get the case title
-            const nature = row.querySelector("td:nth-child(5)").textContent; // Get the case nature
-            const dateFiled = row.querySelector("td:nth-child(6)").textContent; // Get the filed date
-
-            // Set the modal content to match the case being edited
-            modal.style.display = "block";
-            modalTitle.textContent = "Edit Case"; // Set the title to Edit Case
-            modalAddButton.textContent = ""; // Change button text to Save Changes
-
-            // Fill the modal with the case data
-            modal.querySelector("input[name='case_id']").value = caseId;
-            modal.querySelector("input[name='complainant']").value = complainant;
-            modal.querySelector("input[name='respondent']").value = respondent;
-            modal.querySelector("input[name='title']").value = title;
-            modal.querySelector("input[name='nature']").value = nature;
-            modal.querySelector("input[name='date_filed']").value = dateFiled;
+            const row = event.target.closest("tr");
+            const caseNo = row.querySelector("td:first-child").textContent.trim();
+            openEditModal(caseNo);
         });
     });
 
     // Close the modal when the close button is clicked
     closeBtn.addEventListener("click", function () {
+        const form = document.getElementById("addCaseForm");
+        form.removeAttribute("data-edit-mode");
+        form.removeAttribute("data-case-no");
         modal.style.display = "none";
     });
 
@@ -890,34 +950,292 @@ input[type="radio"]:checked {
         if (event.target === modal) {
             modal.style.display = "none";
         }
+        
+        if (event.target === document.getElementById("caseDetailsPopup")) {
+            document.getElementById("caseDetailsPopup").style.display = "none";
+        }
+        
+        if (event.target === document.getElementById("deletePopup")) {
+            closePopup();
+        }
     });
 
-    // Helper function to clear modal fields when adding a new case
-    function clearModalFields() {
-        modal.querySelector("input[name='case_id']").value = "";
-        modal.querySelector("input[name='complainant']").value = "";
-        modal.querySelector("input[name='respondent']").value = "";
-        modal.querySelector("input[name='title']").value = "";
-        modal.querySelector("input[name='nature']").value = "";
-        modal.querySelector("input[name='date_filed']").value = "";
+    // Add search functionality
+    if (searchInput) {
+        searchInput.addEventListener("keyup", function() {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll("tbody tr");
+            
+            rows.forEach(row => {
+                const caseId = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
+                const visible = caseId.includes(searchValue);
+                row.style.display = visible ? "" : "none";
+            });
+        });
+    }
+    
+    // Add filter functionality
+    if (filterSelect) {
+        filterSelect.addEventListener("change", function() {
+            const filterValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll("tbody tr");
+            
+            if (filterValue === "all") {
+                rows.forEach(row => row.style.display = "");
+                return;
+            }
+            
+            rows.forEach(row => {
+                const nature = row.querySelector("td:nth-child(5)").textContent.toLowerCase();
+                const visible = nature === filterValue;
+                row.style.display = visible ? "" : "none";
+            });
+        });
     }
 });
 
-function redirectToAuthorization(event) {
-            event.preventDefault(); 
-            window.location.href = "authorization.html"; 
-        }
+// Function to handle opening the modal for editing a case
+function openEditModal(caseNo) {
+    const modal = document.getElementById("addCaseModal");
+    const modalTitle = modal.querySelector("h2");
+    const modalAddButton = modal.querySelector("button[type='submit']");
+    
+    // Change modal title and button text for editing
+    modalTitle.textContent = "Edit Case";
+    modalAddButton.textContent = "Update Case";
+    
+    // Set form action for edit
+    const form = document.getElementById("addCaseForm");
+    form.setAttribute("data-edit-mode", "true");
+    form.setAttribute("data-case-no", caseNo);
+    
+    // Fetch case details and populate form
+    fetchCaseDetails(caseNo);
+    
+    // Show the modal
+    modal.style.display = "block";
+}
 
-        function showDeletePopup(caseNo) {
+// Function to fetch case details for editing
+function fetchCaseDetails(caseNo) {
+    fetch(`configs/get_case_details.php?case_no=${caseNo}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert("Error: " + data.error);
+                return;
+            }
+            populateEditForm(data);
+        })
+        .catch(error => {
+            console.error("Error fetching case details:", error);
+            alert("Failed to load case details. Please try again.");
+        });
+}
+
+// Function to populate the form with case details for editing
+function populateEditForm(data) {
+    // Clear existing fields first
+    clearModalFields();
+    
+    // Populate case details
+    document.querySelector('textarea[name="title"]').value = data.case.title;
+    
+    // Set nature radio button
+    const natureRadios = document.querySelectorAll('input[name="nature"]');
+    natureRadios.forEach(radio => {
+        if (radio.value === data.case.nature) {
+            radio.checked = true;
+        }
+    });
+    
+    // Set dates and other fields
+    document.querySelector('input[name="file_date"]').value = data.case.file_date;
+    
+    if (data.case.confrontation_date) {
+        document.querySelector('input[name="confrontation_date"]').value = data.case.confrontation_date;
+    }
+    
+    if (data.case.action_taken) {
+        document.querySelector('input[name="action_taken"]').value = data.case.action_taken;
+    }
+    
+    if (data.case.settlement_date) {
+        document.querySelector('input[name="settlement_date"]').value = data.case.settlement_date;
+    }
+    
+    if (data.case.exec_settlement_date) {
+        document.querySelector('input[name="exec_settlement_date"]').value = data.case.exec_settlement_date;
+    }
+    
+    if (data.case.main_agreement) {
+        document.querySelector('textarea[name="main_agreement"]').value = data.case.main_agreement;
+    }
+    
+    // Set compliance radio button
+    if (data.case.compliance_status) {
+        const complianceRadios = document.querySelectorAll('input[name="compliance_status"]');
+        complianceRadios.forEach(radio => {
+            if (radio.value === data.case.compliance_status) {
+                radio.checked = true;
+            }
+        });
+    }
+    
+    // Set remarks radio button if available
+    if (data.case.remarks) {
+        const remarksRadios = document.querySelectorAll('input[name="remarks"]');
+        remarksRadios.forEach(radio => {
+            if (radio.value === data.case.remarks) {
+                radio.checked = true;
+            }
+        });
+    }
+    
+    // Handle complainants
+    const complainantContainer = document.getElementById("complainantFields");
+    // Remove the default first row
+    while (complainantContainer.firstChild) {
+        complainantContainer.removeChild(complainantContainer.firstChild);
+    }
+    
+    // Add each complainant
+    data.complainants.forEach((person, index) => {
+        const newFields = document.createElement("div");
+        newFields.className = "complainant-fields";
+        newFields.innerHTML = `
+            <input type="text" name="complainant_first_name[]" placeholder="First Name" required value="${person.first_name || ''}">
+            <input type="text" name="complainant_middle_name[]" placeholder="Middle Initial" value="${person.middle_name || ''}">
+            <input type="text" name="complainant_last_name[]" placeholder="Last Name" required value="${person.last_name || ''}">
+            <input type="text" name="complainant_suffix[]" placeholder="Suffix" value="${person.suffix || ''}">
+            ${index > 0 ? '<button type="button" class="remove-person">×</button>' : ''}
+        `;
+        complainantContainer.appendChild(newFields);
+        
+        // Add event listener to the remove button if it exists
+        const removeBtn = newFields.querySelector(".remove-person");
+        if (removeBtn) {
+            removeBtn.addEventListener("click", function() {
+                complainantContainer.removeChild(newFields);
+            });
+        }
+    });
+    
+    // If no complainants were added (shouldn't happen), add an empty row
+    if (complainantContainer.children.length === 0) {
+        const newFields = document.createElement("div");
+        newFields.className = "complainant-fields";
+        newFields.innerHTML = `
+            <input type="text" name="complainant_first_name[]" placeholder="First Name" required>
+            <input type="text" name="complainant_middle_name[]" placeholder="Middle Initial">
+            <input type="text" name="complainant_last_name[]" placeholder="Last Name" required>
+            <input type="text" name="complainant_suffix[]" placeholder="Suffix">
+        `;
+        complainantContainer.appendChild(newFields);
+    }
+    
+    // Handle respondents
+    const respondentContainer = document.getElementById("respondentFields");
+    // Remove the default first row
+    while (respondentContainer.firstChild) {
+        respondentContainer.removeChild(respondentContainer.firstChild);
+    }
+    
+    // Add each respondent
+    data.respondents.forEach((person, index) => {
+        const newFields = document.createElement("div");
+        newFields.className = "respondent-fields";
+        newFields.innerHTML = `
+            <input type="text" name="respondent_first_name[]" placeholder="First Name" required value="${person.first_name || ''}">
+            <input type="text" name="respondent_middle_name[]" placeholder="Middle Initial" value="${person.middle_name || ''}">
+            <input type="text" name="respondent_last_name[]" placeholder="Last Name" required value="${person.last_name || ''}">
+            <input type="text" name="respondent_suffix[]" placeholder="Suffix" value="${person.suffix || ''}">
+            ${index > 0 ? '<button type="button" class="remove-person">×</button>' : ''}
+        `;
+        respondentContainer.appendChild(newFields);
+        
+        // Add event listener to the remove button if it exists
+        const removeBtn = newFields.querySelector(".remove-person");
+        if (removeBtn) {
+            removeBtn.addEventListener("click", function() {
+                respondentContainer.removeChild(newFields);
+            });
+        }
+    });
+    
+    // If no respondents were added (shouldn't happen), add an empty row
+    if (respondentContainer.children.length === 0) {
+        const newFields = document.createElement("div");
+        newFields.className = "respondent-fields";
+        newFields.innerHTML = `
+            <input type="text" name="respondent_first_name[]" placeholder="First Name" required>
+            <input type="text" name="respondent_middle_name[]" placeholder="Middle Initial">
+            <input type="text" name="respondent_last_name[]" placeholder="Last Name" required>
+            <input type="text" name="respondent_suffix[]" placeholder="Suffix">
+        `;
+        respondentContainer.appendChild(newFields);
+    }
+}
+
+// Helper function to clear modal fields when adding a new case
+function clearModalFields() {
+    // Clear the form completely
+    document.getElementById("addCaseForm").reset();
+    
+    // Clear complainant fields - completely remove all fields and add a fresh one
+    const complainantContainer = document.getElementById("complainantFields");
+    while (complainantContainer.firstChild) {
+        complainantContainer.removeChild(complainantContainer.firstChild);
+    }
+    
+    // Add a single empty complainant field
+    const newComplainantField = document.createElement("div");
+    newComplainantField.className = "complainant-fields";
+    newComplainantField.innerHTML = `
+        <input type="text" name="complainant_first_name[]" placeholder="First Name" required>
+        <input type="text" name="complainant_middle_name[]" placeholder="Middle Initial">
+        <input type="text" name="complainant_last_name[]" placeholder="Last Name" required>
+        <input type="text" name="complainant_suffix[]" placeholder="Suffix">
+    `;
+    complainantContainer.appendChild(newComplainantField);
+    
+    // Clear respondent fields - completely remove all fields and add a fresh one
+    const respondentContainer = document.getElementById("respondentFields");
+    while (respondentContainer.firstChild) {
+        respondentContainer.removeChild(respondentContainer.firstChild);
+    }
+    
+    // Add a single empty respondent field
+    const newRespondentField = document.createElement("div");
+    newRespondentField.className = "respondent-fields";
+    newRespondentField.innerHTML = `
+        <input type="text" name="respondent_first_name[]" placeholder="First Name" required>
+        <input type="text" name="respondent_middle_name[]" placeholder="Middle Initial">
+        <input type="text" name="respondent_last_name[]" placeholder="Last Name" required>
+        <input type="text" name="respondent_suffix[]" placeholder="Suffix">
+    `;
+    respondentContainer.appendChild(newRespondentField);
+}
+
+// Redirect to authorization page
+function redirectToAuthorization(event) {
+    event.preventDefault(); 
+    window.location.href = "authorization.html"; 
+}
+
+// Show delete confirmation popup
+function showDeletePopup(caseNo) {
     const popup = document.getElementById("deletePopup");
     popup.style.display = "block";
     popup.setAttribute("data-case-no", caseNo);
 }
 
+// Close popup
 function closePopup() {
     document.getElementById("deletePopup").style.display = "none";
 }
 
+// Confirm delete/archive action
 function confirmDelete() {
     const popup = document.getElementById("deletePopup");
     const caseNo = popup.getAttribute("data-case-no");
@@ -943,7 +1261,5 @@ function confirmDelete() {
     })
     .catch(error => console.error("Error:", error));
 }
-
 </script>
-
 </html>

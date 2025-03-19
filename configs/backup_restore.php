@@ -1,11 +1,13 @@
 <?php
 include 'config.php';
 
-if (isset($_GET['backup'])) {
-    $database = "your_database_name";  // Change this to your actual database name
-    $user = "root";  // XAMPP default user
-    $password = "";  // Default password (empty in XAMPP)
+// Define database credentials (make these available for both backup and restore)
+$database = "your_database_name";  // Change this to your actual database name
+$user = "root";  // XAMPP default user
+$password = "";  // Default password (empty in XAMPP)
 
+// Backup Function
+if (isset($_GET['backup'])) {
     // Define backup file location
     $backupFile = "backup_" . date("Y-m-d_H-i-s") . ".sql";
     $backupPath = "C:/xampp/tmp/" . $backupFile;  // Use /tmp/ to avoid permission issues
@@ -32,12 +34,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["backup_file"])) {
     if ($file) {
         $command = "\"C:\\xampp\\mysql\\bin\\mysql\" --user=$user --password=$password $database < \"$file\" 2>&1";
         $restoreOutput = shell_exec($command);
-
-        if ($restoreOutput === null) {
+        
+        if ($restoreOutput === null || $restoreOutput === "") {
             echo "<script>alert('✅ Database restored successfully!'); window.location.href='settings.php';</script>";
         } else {
-            echo "<script>alert('❌ Restore failed: " . htmlspecialchars($restoreOutput) . "');</script>";
+            echo "<script>alert('❌ Restore failed: " . addslashes($restoreOutput) . "');</script>";
         }
+    } else {
+        echo "<script>alert('❌ No file uploaded or upload failed!');</script>";
     }
 }
 ?>

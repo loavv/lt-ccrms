@@ -197,7 +197,7 @@
                 </div>
 
 
-                        <form action="backup_restore.php" method="post" enctype="multipart/form-data">
+                        <form action="configs/backup_restore.php" method="post" enctype="multipart/form-data">
                             <label class="settings-card">
                                 <i class="fas fa-sync-alt"></i>
                                 <div>
