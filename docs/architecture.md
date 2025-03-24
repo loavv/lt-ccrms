@@ -83,7 +83,6 @@ The frontend is built using:
 - HTML5
 - CSS3 (with custom styling)
 - JavaScript
-- Font Awesome for icons
 
 ## API Structure
 The system provides RESTful API endpoints for:
