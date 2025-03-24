@@ -1,4 +1,4 @@
-# LT-CCRMS (Legal Team Case and Client Relationship Management System)
+# LT-CCRMS (Lupon Tagapamayapa- Criminal/Civil Case Management System)
 
 ## Overview
 LT-CCRMS is a comprehensive web-based system designed to manage legal cases, client relationships, and case documentation for legal teams. The system provides a user-friendly interface for handling case management, client information, and generating reports.
