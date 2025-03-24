@@ -17,13 +17,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Start transaction
         $conn->begin_transaction();
 
-        // Generate Case Number
-        $yearCode = date('y');
-        $query = "SELECT MAX(CAST(SUBSTRING_INDEX(case_no, '-', -1) AS UNSIGNED)) AS last_num FROM cases WHERE case_no LIKE '$yearCode-%'";
-        $result = $conn->query($query);
+        // Generate Case Number - Using file_date year instead of current year
+        $yearCode = date('y', strtotime($file_date));
+        
+        // Validate year is not in the future
+        $currentYear = date('Y');
+        $filedYear = date('Y', strtotime($file_date));
+        if ($filedYear > $currentYear) {
+            throw new Exception("Case filing date cannot be in the future");
+        }
+        
+        // Use prepared statement for security
+        $query = "SELECT MAX(CAST(SUBSTRING_INDEX(case_no, '-', -1) AS UNSIGNED)) AS last_num FROM cases WHERE case_no LIKE ?";
+        $stmt = $conn->prepare($query);
+        $yearPattern = $yearCode . '-%';
+        $stmt->bind_param("s", $yearPattern);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $row = $result->fetch_assoc();
         $nextNumber = str_pad(($row['last_num'] ?? 0) + 1, 3, '0', STR_PAD_LEFT);
         $case_no = "$yearCode-$nextNumber";
+        $stmt->close();
+        
+        // Validate case number format
+        if (!preg_match('/^\d{2}-\d{3}$/', $case_no)) {
+            throw new Exception("Generated case number is invalid");
+        }
 
         // Insert Case
         $stmt = $conn->prepare("INSERT INTO cases (case_no, title, nature, file_date, confrontation_date, action_taken, settlement_date, exec_settlement_date, main_agreement, compliance_status, remarks, is_archived) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)");

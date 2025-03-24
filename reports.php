@@ -155,61 +155,128 @@
             }
             
             .table-container {
-        margin-top: 20px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-    }
+                margin-top: 20px;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                max-height: calc(100vh - 400px); /* Adjust based on your layout */
+                overflow: hidden;
+            }
 
-    .filter-container {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        margin-bottom: 10px;
-        background: #f5dbcb;
-        padding: 5px 10px;
-        border-radius: 5px;
-    }
+            .filter-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+                background: #f5dbcb;
+                padding: 8px 15px;
+                border-radius: 5px;
+                width: 100%;
+                position: sticky;
+                top: 0;
+                z-index: 1;
+            }
 
-    .filter-container input {
-        border: none;
-        background: transparent;
-        font-size: 14px;
-        color: #db8505;
-        outline: none;
-    }
+            .filter-select {
+                padding: 8px;
+                border: 1px solid #db8505;
+                border-radius: 4px;
+                background: white;
+                color: #db8505;
+                font-size: 14px;
+                outline: none;
+            }
 
-    .filter-container i {
-        color: #db8505;
-    }
+            .filter-btn {
+                background-color: #db8505;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 15px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+            }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        border: 2px solid #db8505;
-    }
+            .filter-btn:hover {
+                background-color: #b97004;
+            }
 
-    th, td {
-        border: 1px solid #db8505;
-        padding: 10px;
-        text-align: center;
-    }
+            .filter-btn i {
+                font-size: 16px;
+            }
 
-    th {
-        background: white;
-        color: #db8505;
-        font-weight: bold;
-    }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                border: 2px solid #db8505;
+                overflow-y: auto;
+            }
 
-    .chart-wrapper {
-        position: relative; /* Make this the reference for absolute positioning */
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+            thead {
+                position: sticky;
+                top: 0;
+                background: white;
+                z-index: 1;
+            }
+
+            tbody {
+                display: block;
+                max-height: calc(100vh - 500px); /* Adjust based on your layout */
+                overflow-y: auto;
+            }
+
+            thead tr, tbody tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+
+            th, td {
+                border: 1px solid #db8505;
+                padding: 10px;
+                text-align: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            th {
+                background: white;
+                color: #db8505;
+                font-weight: bold;
+            }
+
+            /* Add custom scrollbar styling */
+            tbody::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            tbody::-webkit-scrollbar-track {
+                background: #f5dbcb;
+                border-radius: 4px;
+            }
+
+            tbody::-webkit-scrollbar-thumb {
+                background: #db8505;
+                border-radius: 4px;
+            }
+
+            tbody::-webkit-scrollbar-thumb:hover {
+                background: #b97004;
+            }
+
+            .chart-wrapper {
+                position: relative; /* Make this the reference for absolute positioning */
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
             .container {
                 display: flex;
                 justify-content: center;
@@ -217,6 +284,33 @@
                 height: 100vh;
             }
                 
+            .export-section {
+                padding: 20px;
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            .export-btn {
+                background-color: #db8505;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 15px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+                margin-left: auto; /* This will push the button to the right */
+            }
+
+            .export-btn:hover {
+                background-color: #b97004;
+            }
+
+            .export-btn i {
+                font-size: 16px;
+            }
         </style>
     </head>
     <body>
@@ -248,13 +342,35 @@
                         <select class="year-selector" id="yearSelect"></select>
                     </div>
                 </div>
-                
             </div>
 
             <div class="table-container">
                 <div class="filter-container">
-                    <input type="month" id="filterDate" placeholder="Filter Date (yyyy-mm)">
-                    <i class="fas fa-filter"></i>
+                    <select id="filterYear" class="filter-select">
+                        <option value="">All Years</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <select id="filterMonth" class="filter-select">
+                        <option value="">All Months</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <button onclick="applyFilter()" class="filter-btn">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <button onclick="exportToExcel()" class="export-btn">
+                        <i class="fas fa-file-excel"></i> Export to Excel
+                    </button>
                 </div>
                 <table>
                     <thead>
@@ -277,21 +393,6 @@
 
         
         <script>
-
-document.addEventListener("DOMContentLoaded", function() {
-    const yearSelect = document.getElementById("yearSelect");
-    const currentYear = new Date().getFullYear(); // Get current year
-
-    // Populate dropdown with years from 2022 to the current year
-    for (let year = currentYear; year >= 2022; year--) {  // Reverse order
-        let option = document.createElement("option");
-        option.value = year;
-        option.textContent = year;
-        yearSelect.appendChild(option);
-    }
-
-    yearSelect.value = currentYear; // Set default selection to the current year
-});
 
 document.addEventListener("DOMContentLoaded", function() {
     const ctx = document.getElementById('caseChart').getContext('2d');
@@ -357,16 +458,102 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(error => console.error("Error fetching data:", error));
     }
 
-    // Initialize chart with the default year
+    // Add chart update listener for year selector
     const yearSelect = document.getElementById("yearSelect");
-    updateChart(yearSelect.value); // Load the chart with the currently selected year
-
-    // Handle year selection change
     yearSelect.addEventListener("change", function() {
         updateChart(this.value);
     });
+    
+    // Make updateChart function globally available
+    window.updateChart = updateChart;
 });
 
+// Populate year filter with available years
+document.addEventListener("DOMContentLoaded", function() {
+    const yearSelect = document.getElementById("filterYear");
+    const chartYearSelect = document.getElementById("yearSelect");
+    const currentYear = new Date().getFullYear();
+    
+    // Fetch the earliest year from database instead of hardcoding 2022
+    fetch('configs/get_earliest_year.php')
+        .then(response => response.json())
+        .then(data => {
+            const startYear = data.earliest_year;
+            
+            // Add years from current year down to earliest year for report filter
+            for (let year = currentYear; year >= startYear; year--) {
+                const option = document.createElement("option");
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+            
+            // Also update the chart year selector
+            chartYearSelect.innerHTML = ''; // Clear existing options
+            for (let year = currentYear; year >= startYear; year--) {
+                const option = document.createElement("option");
+                option.value = year;
+                option.textContent = year;
+                chartYearSelect.appendChild(option);
+            }
+            
+            chartYearSelect.value = currentYear; // Set default selection
+            
+            // Initialize chart with current year
+            if (typeof updateChart === 'function') {
+                updateChart(currentYear);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching earliest year:', error);
+            // Fallback to showing just the current year if fetch fails
+            const option = document.createElement("option");
+            option.value = currentYear;
+            option.textContent = currentYear;
+            yearSelect.appendChild(option);
+            
+            if (chartYearSelect.options.length === 0) {
+                const chartOption = document.createElement("option");
+                chartOption.value = currentYear;
+                chartOption.textContent = currentYear;
+                chartYearSelect.appendChild(chartOption);
+            }
+        });
+});
+
+function applyFilter() {
+    const year = document.getElementById('filterYear').value;
+    const month = document.getElementById('filterMonth').value;
+    const tbody = document.querySelector('table tbody');
+    
+    // Clear existing rows
+    tbody.innerHTML = '';
+    
+    // Fetch filtered data
+    fetch(`configs/fetch_filtered_cases.php?year=${year}&month=${month}`)
+        .then(response => response.json())
+        .then(cases => {
+            cases.forEach(case_ => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${case_.case_no}</td>
+                    <td>${case_.complainants || ''}</td>
+                    <td>${case_.respondents || ''}</td>
+                    <td>${case_.title}</td>
+                    <td>${case_.nature}</td>
+                    <td>${case_.file_date}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error fetching filtered cases:', error));
+}
+
+function exportToExcel() {
+    const year = document.getElementById('filterYear').value;
+    const month = document.getElementById('filterMonth').value;
+    window.location.href = `configs/export_excel.php?year=${year}&month=${month}`;
+}
 
         </script>
     </body>
