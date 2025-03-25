@@ -1,3 +1,7 @@
+<?php
+require_once 'configs/auth.php';
+checkAuth();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -461,8 +465,8 @@ function getRandomColor() {
 
 // Logout Function
 function redirectToAuthorization(event) {
-    event.preventDefault(); 
-    window.location.href = "authorization.html"; 
+    event.preventDefault();
+    window.location.href = "configs/logout.php";
 }
     </script>
 </body>

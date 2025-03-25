@@ -1,3 +1,7 @@
+<?php
+require_once 'configs/auth.php';
+checkAuth();
+?>
     <!DOCTYPE html>
     <html lang="en">
     <head>

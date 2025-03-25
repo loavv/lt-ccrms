@@ -1,3 +1,7 @@
+<?php
+require_once 'configs/auth.php';
+checkAuth();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1219,8 +1223,8 @@ function clearModalFields() {
 
 // Redirect to authorization page
 function redirectToAuthorization(event) {
-    event.preventDefault(); 
-    window.location.href = "authorization.html"; 
+    event.preventDefault();
+    window.location.href = "configs/logout.php";
 }
 
 // Show delete confirmation popup

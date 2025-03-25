@@ -1,3 +1,7 @@
+<?php
+require_once 'configs/auth.php';
+checkAuth();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -158,6 +162,121 @@
             color: #db8505;
         }
         
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 2px solid #db8505;
+            border-radius: 12px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-button {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #db8505;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            color: #f99858;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #db8505;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #db8505;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #f99858;
+            box-shadow: 0 0 5px rgba(219, 133, 5, 0.3);
+        }
+
+        .popup-content button {
+            background-color: #db8505;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .popup-content button:hover {
+            background-color: #f99858;
+        }
+
+        .popup-content h2 {
+            color: #db8505;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -180,9 +299,25 @@
             <div class="header-right">
                 <button onclick="redirectToAuthorization(event)"class="lupon-btn">LOG OUT <i class="fas fa-sign-out-alt"></i></button>
             </div>
-
-            
         </div>
+
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success">
+                <?php 
+                echo $_SESSION['success'];
+                unset($_SESSION['success']);
+                ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-error">
+                <?php 
+                echo $_SESSION['error'];
+                unset($_SESSION['error']);
+                ?>
+            </div>
+        <?php endif; ?>
 
         <div class="settings-container">
             <div class="settings-section">
@@ -213,17 +348,41 @@
             <div class="settings-section">
                 <h2>Account</h2>
                 <div class="settings-option">
-                    <div class="settings-card">
+                    <div class="settings-card" onclick="openManageAccountModal()">
                         <i class="fas fa-users"></i>
                         <div>
                             <div class="text">Manage Account</div>
-                            <p>Lupon / Official</p>
+                            <p>Change Password</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Manage Account Modal -->
+    <div id="manageAccountModal" class="modal">
+        <div class="popup-content">
+            <span class="close-button" onclick="closeManageAccountModal()">&times;</span>
+            <h2>Change Password</h2>
+            <form id="manageAccountForm" action="configs/update_password.php" method="POST">
+                <div class="form-group">
+                    <label>Current Password:</label>
+                    <input type="password" name="current_password" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password:</label>
+                    <input type="password" name="new_password" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password:</label>
+                    <input type="password" name="confirm_password" required>
+                </div>
+                <button type="submit">Update Password</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         function backupDatabase() {
             window.location.href = "configs/backup_restore.php?backup=true";
@@ -231,9 +390,37 @@
 
         function redirectToAuthorization(event) {
             event.preventDefault(); 
-            window.location.href = "authorization.html"; 
+            window.location.href = "configs/logout.php"; 
         }
 
+        // Manage Account Modal Functions
+        function openManageAccountModal() {
+            document.getElementById('manageAccountModal').style.display = 'block';
+        }
+
+        function closeManageAccountModal() {
+            document.getElementById('manageAccountModal').style.display = 'none';
+            document.getElementById('manageAccountForm').reset();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('manageAccountModal');
+            if (event.target == modal) {
+                closeManageAccountModal();
+            }
+        }
+
+        // Form validation
+        document.getElementById('manageAccountForm').addEventListener('submit', function(event) {
+            const newPassword = document.querySelector('input[name="new_password"]').value;
+            const confirmPassword = document.querySelector('input[name="confirm_password"]').value;
+            
+            if (newPassword !== confirmPassword) {
+                event.preventDefault();
+                alert('New passwords do not match!');
+            }
+        });
     </script>
 </body>
 </html>

@@ -1,3 +1,7 @@
+<?php
+require_once 'configs/auth.php';
+checkAuth();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -495,7 +499,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Function to redirect to authorization page
 function redirectToAuthorization(event) {
     event.preventDefault();
-    window.location.href = "authorization.html";
+    window.location.href = "configs/logout.php";
 }
 </script>
 
