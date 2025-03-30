@@ -306,7 +306,11 @@ button[type="submit"]:hover {
 
             
         </div>
-
+        <?php
+$password = "official"; // Change this to the password you want to hash
+$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+echo "Hashed Password: " . $hashedPassword;
+?>
         <div class="settings-container">
             <div class="settings-section">
                 <h2>Data</h2>
